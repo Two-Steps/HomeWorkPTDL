@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 df = pd.read_csv('OnlineRetail.csv')
-df['InvoiceDate'] = df['InvoiceDate'].str.slice(0, -5)
+df['InvoiceDate'] = df['InvoiceDate'].str.split(' ').str[0]
 print(df)
 # print(df.columns)
 # ['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'InvoiceDate',
