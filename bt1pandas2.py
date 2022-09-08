@@ -32,7 +32,12 @@ df1 = df.groupby('Continent')['Country'].count().sort_values(ascending=False)
 # print(df1)
 
 # tổng gdp, trung bình gdp mỗi châu lục
-df2 = pd.DataFrame()
-df2['Continent'] = df.groupby('Continent').sum().index
-df2['Total'] = df.groupby('Continent').sum().loc[:, :]
+df2 = df.groupby('Continent').sum()
+df2.columns = ['Total']
 print(df2)
+df3 = df.groupby('Continent').mean()
+df3.columns = ['AVG']
+print(df3)
+
+df4 = pd.concat([df2, df3], axis=1)
+print(df4)
