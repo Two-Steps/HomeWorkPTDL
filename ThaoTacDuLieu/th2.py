@@ -14,6 +14,7 @@ df = pd.read_csv('shopeep_koreantop_clothing_shop_data.csv')
 # - Để đơn giản ta lấy vài thuộc tính
 df = df[['date_collected', 'shop_location', 'response_time']]
 # print(df.head())
+print(df.info())
 
 # - Tách cột dùng split()
 # Tách cột shop_location thành 2 cột District và City
