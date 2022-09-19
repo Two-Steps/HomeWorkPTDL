@@ -21,17 +21,13 @@ df = df.fillna(value={'land_certificate':'Không có thông tin'})
 
 list_ = ['house_direction', 'bedroom', 'balcony_direction', 'toilet', 'floor']
 
-a = df['house_direction'].value_counts().index[0]
-df = df.fillna(value={'house_direction':a})
-a2 = df['bedroom'].value_counts().index[0]
-df = df.fillna(value={'bedroom':a2})
-a3 = df['balcony_direction'].value_counts().index[0]
-df = df.fillna(value={'balcony_direction':a3})
-a4 = df['toilet'].value_counts().index[0]
-df = df.fillna(value={'toilet':a4})
-a5 = df['floor'].value_counts().index[0]
-df = df.fillna(value={'floor':a5})
-# print(df.info())
+def xu_ly(data, list_veriabel):
+    for i in list_veriabel:
+        a = data[i].value_counts().index[0]
+        data = data.fillna(value={i:a})
+    return data
+df = xu_ly(df, list_)
+print(df.info())
 # Lọc thông tin những bất động sản ở trong ngõ thành bộ dữ liệu nhà ngõ
 df_nha_ngo = df
 df_nha_ngo['type_of_land'] = df['type_of_land'].where(df['type_of_land'].str.contains('nhà riêng'))
@@ -56,16 +52,16 @@ df_nha_ngo['gia/m2'] = df_nha_ngo['gia/m2'].where(~(df_nha_ngo['gia/m2'] < (Q1_g
 scaler = MinMaxScaler()
 mms = scaler.fit_transform(pd.DataFrame(df_nha_ngo['gia/m2']))
 sns.kdeplot(data=mms)
-plt.show()
+# plt.show()
 
 # -------- 2. Chuẩn hóa gia/m2 với robust scaling
 scaler_robust = RobustScaler()
 rbs = scaler_robust.fit_transform(pd.DataFrame(df_nha_ngo['gia/m2']))
 sns.kdeplot(data=rbs)
-plt.show()
+# plt.show()
 
 # -------- 3. Chuẩn hóa gia/m2 với standard scaling
 scaler_standard = StandardScaler()
 sc = scaler_standard.fit_transform(pd.DataFrame(df_nha_ngo['gia/m2']))
 sns.kdeplot(data=sc)
-plt.show()
+# plt.show()
