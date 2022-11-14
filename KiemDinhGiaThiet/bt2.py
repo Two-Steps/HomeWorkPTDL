@@ -20,5 +20,5 @@ print(df_tn['price/m2'].describe())
 # plt.show()
 
 # Kiểm định giả thuyết giá (triệu đ/m2) nhà mặt phố cao hơn giá nhà trong ngõ với mức ý nghĩa 5%
-print(stats.ttest_rel(df_np['price/m2'],df_tn['price/m2'] ))
+print(stats.ttest_ind(df_np['price/m2'],df_tn['price/m2'] ))
 # nhận H0 => nhà mặt phố giá /m2 cao hơn
