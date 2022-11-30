@@ -49,9 +49,9 @@ df = df[((df['ten_quan'] == 'Hai Bà Trưng') | (df['ten_quan'] == 'Quận Hai B
 #        'gia_m2', 'du_an', 'project_name', 'id_duong', 'ten_duong',
 #        'do_rong_duong', 'do_rong_duong_ml', 'id_phuong', 'ten_phuong']
 
-# tạm thời bỏ một số cột mà gần như chắc chắn k liên quan cho bớt rối mắt đã nào
-list_columns = ['dien_tich', 'phong_ngu','so_tang', 'mat_tien', 'noi_that', 'huong_nha', 'so_do', 'lat', 'long', 
-'gia','gia_m2', 'id_duong', 'ten_duong','do_rong_duong', 'id_phuong', 'ten_phuong']
+# tạm thời bỏ một số cột mà gần như chắc chắn k liên quan cho bớt rối mắt đã nào - update noi_that, huong nha bỏ, do_rong_duong => quá ít dữ liệu
+list_columns = ['dien_tich', 'phong_ngu','so_tang', 'so_do', 'lat', 'long', 
+'gia','gia_m2', 'id_duong', 'ten_duong', 'id_phuong', 'ten_phuong']
 df = df[list_columns].reset_index(drop= True)
 # print(df.head())
 # print(df.info())
@@ -83,7 +83,7 @@ df1['dien_tich'] = BoxplotOutlierClipper().fit_transform(df1['dien_tich'])
 
 # print(df1.info())
 # xử lý cột thứ 3: phong_ngu 3057 non-null/ 5288 row - update: mới sủa lại code chưa chắc số bản ghi đã chuẩn
-print(df1['phong_ngu'].describe())
+# print(df1['phong_ngu'].describe())
 # sns.histplot(data= df1['phong_ngu'], bins= 100)
 # plt.show()
 df1['phong_ngu'] = BoxplotOutlierClipper().fit_transform(df1['phong_ngu'])
@@ -92,12 +92,12 @@ df1['phong_ngu'] = BoxplotOutlierClipper().fit_transform(df1['phong_ngu'])
 # plt.show()
 # print(df1['phong_ngu'].describe())
 df1['phong_ngu'] = df1['phong_ngu'].fillna(df1['phong_ngu'].mean())
-print(df1.info())
+# print(df1.info())
 # print(df1['phong_ngu'].describe())
 # df1.to_csv('data_report.csv')
 
 # # xử lý cột số tầng 4087 non-null non-null / 5644 row - đã update số bản ghi ở đây
-print(df1['so_tang'].describe())
+# print(df1['so_tang'].describe())
 # sns.histplot(data= df1['so_tang'], bins = 600)
 # plt.show()
 # sns.boxplot(data = df1['so_tang'])
@@ -109,6 +109,47 @@ df1['so_tang'] = BoxplotOutlierClipper().fit_transform(df1['so_tang'])
 df1['so_tang'] = df1['so_tang'].fillna(df1['so_tang'].mean()) # fill na
 # df1['so_tang'].hist(bins= 10)
 # plt.show()
-print(df1['so_tang'].describe())
+# print(df1['so_tang'].describe())
+# print(df1.info())
+# df1.to_csv('data_report.csv')
+
+# xử lý trước cái id_duong, ten_duong, id_phuong, ten_phuong
+df1 = df1.dropna(subset=['id_duong', 'ten_duong', 'id_phuong', 'ten_phuong'])
 print(df1.info())
-df1.to_csv('data_report.csv')
+
+# ===> bỏ mat_tien, tuy dữ liệu khoảng 20% nhưng khi thử fill thì nó quá ảo @@ 
+# tiếp theo đến  mat_tien 1469 non-null/ 5644 record còn lại
+# sns.boxplot(data = df1['mat_tien'])
+# plt.show()
+# print(df1['mat_tien'].describe())
+# df1['mat_tien'] = BoxplotOutlierClipper().fit_transform(df1['mat_tien'])
+# # sns.boxplot(data = df1['mat_tien'])
+# # plt.show()
+# # print(df1['mat_tien'].describe())
+# # df1.to_csv('data_report.csv')
+# df1['mat_tien'] = df1['mat_tien'].fillna(0)
+# a = df1.groupby(['ten_duong', 'id_duong'])['mat_tien'].mean()
+# dic_mt = {} 
+# for i in range(a.shape[0]):
+#     if a.values[i] != 0:
+#         dic_mt[a.index[i][0]] = a.values[i]
+#     else:
+#         dic_mt[a.index[i][0]] = a.values.mean()
+# # print(dic_mt)
+# for k, v in dic_mt.items():
+#     index = df1.index[df1['ten_duong'] == k].tolist()
+#     df1.loc[index, 'mat_tien'] = float(v)
+
+# df1.to_csv('data_report1.csv')
+# print(df1.info())
+
+# xử lý phần sổ đỏ
+
+list_1 = ['sổ đỏ', 'có sổ', 'sđcc', 'riêng', 'đẹp', 'chuẩn', 'so do', 'chính chủ']
+df1['so_do'] = df1['so_do'].str.lower()
+df1['so_do'] = df1['so_do'].str.strip('- !. + , : ) (')
+df['so_do2'] = df.apply(lambda x : 1 if str(x['so_do']).find(), axis= 1)
+# print(df1['so_do'].unique())
+# print(df1['so_do'].value_counts())
+print(df1['so_do'].head(15))
+
