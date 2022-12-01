@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Tuple
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_percentage_error, r2_score, mean_squared_error
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
 
 def find_boxplot_boundaries(
     col: pd.Series, whisker_coeff: float = 1.5
@@ -177,7 +181,30 @@ df1 = df1.dropna(subset= 'gia')
 # sns.boxplot(data= df1['gia'])
 # plt.show()
 df1['gia'] = BoxplotOutlierClipper().fit_transform(df1['gia'])
-print(df1['gia'].describe())
-print(df1.info())
+# print(df1['gia'].describe())
+# print(df1.info())
 # sns.boxplot(data= df1['gia'])
 # plt.show()
+
+# lat, long, gia/m2 ?
+df1 = df1.dropna(subset = ['lat', 'long', 'gia_m2'])
+# print(df1.info())
+# print(df1.head(10))
+
+# split dữ liệu
+X, y = df1[['dien_tich', 'phong_ngu', 'so_tang', 'lat', 'long', 'gia', 'ten_duong', 'ten_phuong', 'so_do2']], df1['gia_m2']
+X_train, X_test , y_train, y_test = train_test_split(X, y, train_size=0.8, test_size= 0.2, random_state= 0)
+# print(X_train.head(10))
+# print(y_train.head(10))
+# regressor = LinearRegression()  # Khai báo mô hình hồi quy tuyến tính
+# regressor.fit(X_train, y_train) #Huấn luyện mô hình
+
+# y_pred = regressor.predict(X_test)
+# r2 = r2_score(y_test, y_pred)
+# print('r2: ', r2)
+# print("MAPE: ",mean_absolute_percentage_error(y_test, y_pred))
+
+regressor = DecisionTreeRegressor(random_state=0)
+regressor.fit(X_train, y_train)
+y_pred = regressor.predict(X_test)
+print("MAPE: ",mean_absolute_percentage_error(y_test, y_pred))
