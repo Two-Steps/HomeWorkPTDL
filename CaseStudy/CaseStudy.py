@@ -30,7 +30,7 @@ class BoxplotOutlierClipper(BaseEstimator, TransformerMixin):
     def transform(self, X):
         return X.clip(self.lower, self.upper)
 
-df = pd.read_csv('CaseStudy\RoadSurfaceHouseTrading.csv')
+df = pd.read_csv('CaseStudy\RoadSurfaceHouseTrading.csv', encoding='utf-8')
 # print(df.head(5))
 # print(df.info())
 # print(df.describe())
@@ -115,7 +115,15 @@ df1['so_tang'] = df1['so_tang'].fillna(df1['so_tang'].mean()) # fill na
 
 # xử lý trước cái id_duong, ten_duong, id_phuong, ten_phuong
 df1 = df1.dropna(subset=['id_duong', 'ten_duong', 'id_phuong', 'ten_phuong'])
-print(df1.info())
+# print(df1.info())
+# df1['id_duong'] = df1['id_duong'].astype('category').cat.codes
+df1['ten_duong'] = df1['ten_duong'].astype('category').cat.codes
+# df1['id_phuong'] = df1['id_phuong'].astype('category').cat.codes
+df1['ten_phuong'] = df1['ten_phuong'].astype('category').cat.codes
+# check thấy mỗi id_duong tương đương ten_duong => bỏ bớt đi
+del df1['id_duong']
+del df1['id_phuong']
+
 
 # ===> bỏ mat_tien, tuy dữ liệu khoảng 20% nhưng khi thử fill thì nó quá ảo @@ 
 # tiếp theo đến  mat_tien 1469 non-null/ 5644 record còn lại
@@ -144,12 +152,32 @@ print(df1.info())
 # print(df1.info())
 
 # xử lý phần sổ đỏ
+def pre_sd(item):
+    list_1 = ['sổ đỏ','số đỏ', 'sổ hồng','sổ nét', 'có sổ', 'sđcc','sdcc', 'riêng', 'đẹp', 'chuẩn', 'so do', 'chính chủ','sổ 1 chủ',\
+         'sổ xịn', 'giấy phép', 'giấy tờ', 'pháp lý đầy đủ','pháp lí đầy đủ','đầy đủ pháp lý', 'sổ sách đàng hoàng', 'sẵn sàng giao dịch'\
+            'sổ rất nét', 'sổ phân lô', 'só sổ']
+    for i in list_1:
+        if str(item).find(i) != -1:
+            return 1
+        elif str(item).find(i) == -1: 
+            return 0
 
-list_1 = ['sổ đỏ', 'có sổ', 'sđcc', 'riêng', 'đẹp', 'chuẩn', 'so do', 'chính chủ']
 df1['so_do'] = df1['so_do'].str.lower()
-df1['so_do'] = df1['so_do'].str.strip('- !. + , : ) (')
-df['so_do2'] = df.apply(lambda x : 1 if str(x['so_do']).find(), axis= 1)
-# print(df1['so_do'].unique())
-# print(df1['so_do'].value_counts())
-print(df1['so_do'].head(15))
+df1['so_do'] = df1['so_do'].str.strip('- !. + , : , ) (')
+df1['so_do2'] = df1['so_do'].apply(pre_sd)
+# print(df1['so_do2'].value_counts())
+del df1['so_do']
+# df1.to_csv('report_data2.csv')
+# print(df1.info())
 
+# xử lý cột giá
+df1 = df1.dropna(subset= 'gia')
+# print(df1.info())
+# print(df1['gia'].describe())
+# sns.boxplot(data= df1['gia'])
+# plt.show()
+df1['gia'] = BoxplotOutlierClipper().fit_transform(df1['gia'])
+print(df1['gia'].describe())
+print(df1.info())
+# sns.boxplot(data= df1['gia'])
+# plt.show()
