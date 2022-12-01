@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Tuple
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_absolute_percentage_error, r2_score, mean_squared_error
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
+
 
 def find_boxplot_boundaries(
     col: pd.Series, whisker_coeff: float = 1.5
@@ -95,7 +96,7 @@ df1['phong_ngu'] = BoxplotOutlierClipper().fit_transform(df1['phong_ngu'])
 # sns.boxplot(data= df1['phong_ngu'])
 # plt.show()
 # print(df1['phong_ngu'].describe())
-df1['phong_ngu'] = df1['phong_ngu'].fillna(df1['phong_ngu'].mean())
+df1['phong_ngu'] = df1['phong_ngu'].fillna(df1['phong_ngu'].median())
 # print(df1.info())
 # print(df1['phong_ngu'].describe())
 # df1.to_csv('data_report.csv')
@@ -110,7 +111,7 @@ df1['phong_ngu'] = df1['phong_ngu'].fillna(df1['phong_ngu'].mean())
 df1['so_tang'] = BoxplotOutlierClipper().fit_transform(df1['so_tang'])
 # sns.boxplot(data = df1['so_tang'])
 # plt.show()
-df1['so_tang'] = df1['so_tang'].fillna(df1['so_tang'].mean()) # fill na
+df1['so_tang'] = df1['so_tang'].fillna(df1['so_tang'].median()) # fill na
 # df1['so_tang'].hist(bins= 10)
 # plt.show()
 # print(df1['so_tang'].describe())
@@ -187,13 +188,14 @@ df1['gia'] = BoxplotOutlierClipper().fit_transform(df1['gia'])
 # plt.show()
 
 # lat, long, gia/m2 ?
+print(df1.info())
 df1 = df1.dropna(subset = ['lat', 'long', 'gia_m2'])
-# print(df1.info())
+print(df1.info())
 # print(df1.head(10))
 
 # split dữ liệu
 X, y = df1[['dien_tich', 'phong_ngu', 'so_tang', 'lat', 'long', 'gia', 'ten_duong', 'ten_phuong', 'so_do2']], df1['gia_m2']
-X_train, X_test , y_train, y_test = train_test_split(X, y, train_size=0.8, test_size= 0.2, random_state= 0)
+X_train, X_test , y_train, y_test = train_test_split(X, y, train_size=0.8, test_size= 0.2, random_state= 42)
 # print(X_train.head(10))
 # print(y_train.head(10))
 # regressor = LinearRegression()  # Khai báo mô hình hồi quy tuyến tính
@@ -208,3 +210,16 @@ regressor = DecisionTreeRegressor(random_state=0)
 regressor.fit(X_train, y_train)
 y_pred = regressor.predict(X_test)
 print("MAPE: ",mean_absolute_percentage_error(y_test, y_pred))
+r2 = r2_score(y_test, y_pred)
+print('r2: ', r2)
+# thêm
+# parameters={"splitter":["best","random"],
+#             "max_depth" : [1,3,5,7,9,11,12],
+#            "min_samples_leaf":[1,2,3,4,5,6,7,8,9,10],
+#            "min_weight_fraction_leaf":[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9],
+#            "max_features":["auto","log2","sqrt",None],
+#            "max_leaf_nodes":[None,10,20,30,40,50,60,70,80,90] }
+# tuning_model=GridSearchCV(regressor,param_grid=parameters,scoring='neg_mean_squared_error',cv=3,verbose=3)
+# tuning_model.fit(X_train, y_train)
+# y_pred= tuning_model.best_estimator_.predict(X_test)
+# print("MAPE2: ",mean_absolute_percentage_error(y_test, y_pred))
