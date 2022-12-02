@@ -1,8 +1,8 @@
 # "Xây dựng  mô hình dự báo giá nhà trên/m2 của bài toán mua bán nhà mặt phố Quận Hai Bà Trưng"
-import pandas as pd
+import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
+import seaborn as sns 
 from typing import Tuple
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -129,7 +129,6 @@ df1['ten_phuong'] = df1['ten_phuong'].astype('category').cat.codes
 del df1['id_duong']
 del df1['id_phuong']
 
-
 # ===> bỏ mat_tien, tuy dữ liệu khoảng 20% nhưng khi thử fill thì nó quá ảo @@ 
 # tiếp theo đến  mat_tien 1469 non-null/ 5644 record còn lại
 # sns.boxplot(data = df1['mat_tien'])
@@ -184,13 +183,27 @@ df1 = df1.dropna(subset= 'gia')
 df1['gia'] = BoxplotOutlierClipper().fit_transform(df1['gia'])
 # print(df1['gia'].describe())
 # print(df1.info())
+# giá thực tế nó khác giá trị min => nên chặt bớt: chọn >= 5000 
+df1 = df1[df1['gia'] >= 5000]
+# print(df1['gia'].describe())
+# print(df1.info())
+# print(df1.describe())
 # sns.boxplot(data= df1['gia'])
 # plt.show()
 
+
 # lat, long, gia/m2 ?
-print(df1.info())
+# print(df1.info())
 df1 = df1.dropna(subset = ['lat', 'long', 'gia_m2'])
-print(df1.info())
+# print(df1.info())
+# print(df1['gia_m2'].describe())
+df1['gia_m2'] = BoxplotOutlierClipper().fit_transform(df1['gia_m2'])
+print(df1.describe())
+# sns.boxplot(data= df1['gia_m2'])
+# plt.show()
+# giá thực tế nó khác giá trị min => nên chặt bớt: chọn >= 50 theo boxplot và describe, nhà mặt phố đó ba
+df1 = df1[df1['gia_m2'] >= 50]
+# print(df1.describe())
 # print(df1.head(10))
 
 # split dữ liệu
@@ -210,8 +223,8 @@ regressor = DecisionTreeRegressor(random_state=0)
 regressor.fit(X_train, y_train)
 y_pred = regressor.predict(X_test)
 print("MAPE: ",mean_absolute_percentage_error(y_test, y_pred))
-r2 = r2_score(y_test, y_pred)
-print('r2: ', r2)
+# r2 = r2_score(y_test, y_pred)
+# print('r2: ', r2)
 # thêm
 # parameters={"splitter":["best","random"],
 #             "max_depth" : [1,3,5,7,9,11,12],
@@ -223,3 +236,12 @@ print('r2: ', r2)
 # tuning_model.fit(X_train, y_train)
 # y_pred= tuning_model.best_estimator_.predict(X_test)
 # print("MAPE2: ",mean_absolute_percentage_error(y_test, y_pred))
+
+# print(X.columns.tolist())
+# ['dien_tich', 'phong_ngu', 'so_tang', 'lat', 'long', 'gia', 'ten_duong', 'ten_phuong', 'so_do2']
+print(df1.head())
+# thử 1 dữ liệu [96, 3, 2, 20.999962, 105.861620, 32000.0, 56, 6, 1]
+in_data = [96, 3, 2, 20.999962, 105.861620, 32000.0, 36, 6, 1]
+in_data = np.array(in_data).reshape(1,-1)
+estimate = regressor.predict(in_data)
+print(estimate)
