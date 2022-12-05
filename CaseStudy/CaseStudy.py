@@ -198,7 +198,7 @@ df1 = df1.dropna(subset = ['lat', 'long', 'gia_m2'])
 # print(df1.info())
 # print(df1['gia_m2'].describe())
 df1['gia_m2'] = BoxplotOutlierClipper().fit_transform(df1['gia_m2'])
-print(df1.describe())
+# print(df1.describe())
 # sns.boxplot(data= df1['gia_m2'])
 # plt.show()
 # giá thực tế nó khác giá trị min => nên chặt bớt: chọn >= 50 theo boxplot và describe, nhà mặt phố đó ba
@@ -239,7 +239,7 @@ print("MAPE: ",mean_absolute_percentage_error(y_test, y_pred))
 
 # print(X.columns.tolist())
 # ['dien_tich', 'phong_ngu', 'so_tang', 'lat', 'long', 'gia', 'ten_duong', 'ten_phuong', 'so_do2']
-print(df1.head())
+# print(df1.head())
 # thử 1 dữ liệu [96, 3, 2, 20.999962, 105.861620, 32000.0, 56, 6, 1]
 in_data = [96, 3, 2, 20.999962, 105.861620, 32000.0, 36, 6, 1]
 in_data = np.array(in_data).reshape(1,-1)
